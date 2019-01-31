@@ -1,5 +1,6 @@
 import requests
 from collections import deque
+from urllib.parse import urlparse, urljoin
 from html.parser import HTMLParser
 
 class LinkParser(HTMLParser):
@@ -10,34 +11,16 @@ class LinkParser(HTMLParser):
                     self.limit -= 1
                     self.data.append(attr[1])
 
-def determine_uri_scheme(uri):
-    '''
-    Determines the scheme of the URI
-    Returns 'http' if the scheme is HTTP(S),
-    'other' if some other scheme,
-    '' if it is not an URL
-    '''
-    scheme = uri[:16] # the longest id of an URI scheme is 15 characters
-    if scheme[:4] == 'http':
-        # if http or https
-        return 'http'
-    elif scheme.find(':'):
-        # we do not care about the exact scheme if it is not HTTP
-        return 'other'
-    else:
-        # if path only; no scheme or host
-        return ''    
-
 def handle_uri(queue, current_url, uri):
     '''
     Handles discovered URIs: forms URLs if URI is only the path,
     rejects non-HTTP(S) URLs, adds valid URLs to the queue
     '''
-    uri_scheme = determine_uri_scheme(uri)
-    if uri_scheme == 'http':
+    uri_scheme = urlparse(uri).scheme
+    if uri_scheme == 'http' or uri_scheme == 'https':
         queue.appendleft(uri)
     elif uri_scheme == '':
-        queue.appendleft(current_url + uri)
+        queue.appendleft(urljoin(current_url, uri))
 
 def find_unique_urls(start_url, limit):
     '''
