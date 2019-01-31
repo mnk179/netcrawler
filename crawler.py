@@ -66,7 +66,9 @@ def find_unique_urls(start_url, limit):
 if __name__ == '__main__':
     import sys
     if len(sys.argv) > 1:
-        print(find_unique_urls(str(sys.argv[1]), 100))
+        urls = find_unique_urls(str(sys.argv[1]), 100)
+        for url in urls:
+            print(url)
     else:
         print('Please provide a starting url.')
         print('Use this to run:')
