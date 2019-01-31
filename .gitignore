@@ -3,6 +3,7 @@
 
 # Python
 venv/
+*.cpython
 
 # VS Code
 .vs_code/
