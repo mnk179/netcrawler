@@ -4,7 +4,7 @@ from crawler import find_unique_urls
 class TestCrawler(unittest.TestCase):
 
     def setUp(self):
-        self.start_url = 'https://bath.ac.uk'
+        self.start_url = 'https://www.netcraft.com'
         self.limit = 10
         self.url_set = find_unique_urls(self.start_url, self.limit)
         print('done setup')
