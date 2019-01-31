@@ -37,7 +37,7 @@ def find_unique_urls(start_url, limit):
     """
     Find a set of size limit of unique URLs starting the crawl at start_url
     """
-    # we use are using a set since elements should be unique
+    # we are using a set since elements should be unique
     url_set = set()
     queue = deque()
     queue.appendleft(start_url)
