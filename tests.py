@@ -7,7 +7,6 @@ class TestCrawler(unittest.TestCase):
         self.start_url = 'https://www.netcraft.com'
         self.limit = 10
         self.url_set = find_unique_urls(self.start_url, self.limit)
-        print('done setup')
 
     def test_set_size_matches_limit(self):
         self.assertEqual(len(self.url_set), self.limit)
