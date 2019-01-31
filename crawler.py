@@ -1,6 +1,7 @@
 import requests
 from collections import deque
 from urllib.parse import urlparse, urljoin
+from urllib.robotparser import RobotFileParser
 from html.parser import HTMLParser
 from bs4 import BeautifulSoup, SoupStrainer
 
@@ -41,6 +42,10 @@ def find_unique_urls(start_url, limit):
     queue = deque()
     queue.appendleft(start_url)
 
+    # initialise robotparser
+    rp = RobotFileParser()
+
+    # add starting URL to the set
     url_set.add(start_url)
     limit -= 1
 
@@ -48,8 +53,16 @@ def find_unique_urls(start_url, limit):
         # check if queue is empty
         if not queue:
             break
+        
         url = queue.pop()
-        response = requests.get(url)
+        rp.set_url(url)
+        rp.read()
+
+        # check if robots.txt allows to fetch
+        if rp.can_fetch('*', url):
+            response = requests.get(url)
+        else:
+            continue
 
         current_url = response.url
         
@@ -57,9 +70,8 @@ def find_unique_urls(start_url, limit):
             parse_only = SoupStrainer('a')
             soup = BeautifulSoup(response.text, "html.parser", parse_only=parse_only)
             for item in soup.children:
-                if limit > 0:
-                    if handle_uri(queue, url_set, current_url, item['href']):
-                        limit -= 1
+                if limit > 0 and handle_uri(queue, url_set, current_url, item['href']):
+                    limit -= 1
 
     return url_set
 
